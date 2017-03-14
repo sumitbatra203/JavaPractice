@@ -1,0 +1,85 @@
+package geeksForgeeks;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class EvenOddUsingBlockingQueue {
+	
+	public static void main(String[] args) {
+		BlockingQueue<String> queue=new ArrayBlockingQueue<String>(1);
+		Semaphore semaphore=new Semaphore(1);
+		int arr[]={1,2,3,4,5,6,7,8,9};	
+		AtomicInteger atIndex=new AtomicInteger(0);
+		AtomicInteger atSize=new AtomicInteger(arr.length);		
+		
+		new Thread(new EvenThread(queue,atIndex,atSize,arr,semaphore)).start();
+		new Thread(new OddThread(queue,atIndex,atSize,arr,semaphore)).start();
+		
+	}
+	
+static class EvenThread implements Runnable{
+	BlockingQueue<String> queue;
+	AtomicInteger atIndex,atSize;
+	int arr[];
+	Semaphore semaphore;
+	EvenThread(BlockingQueue<String> queue,AtomicInteger atIndex,AtomicInteger atSize,int arr[],Semaphore semaphore){
+		this.queue=queue;
+		this.atIndex=atIndex;	
+		this.atSize=atSize;
+		this.arr=arr;
+		this.semaphore=semaphore;
+	}
+	@Override
+	public void run() {		
+		try {						
+			while(atIndex.get()<=(atSize.get()-1)){
+			queue.put("even added");
+			System.out.println(Thread.currentThread().getName()+"  value printed "+arr[atIndex.getAndIncrement()]);
+			Thread.sleep(100);
+			semaphore.release();
+			}
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}	
+
+
+static class OddThread implements Runnable{
+	BlockingQueue<String> queue;
+	AtomicInteger atIndex,atSize;
+	int arr[];
+	Semaphore semaphore;
+	OddThread(BlockingQueue<String> queue,AtomicInteger atIndex,AtomicInteger atSize,int arr[],Semaphore semaphore){
+		this.queue=queue;
+		this.atIndex=atIndex;	
+		this.atSize=atSize;
+		this.arr=arr;
+		this.semaphore=semaphore;
+	}
+	@Override
+	public void run() {		
+		try {
+							
+			while(atIndex.get()<(atSize.get()-1)){
+			semaphore.acquire();
+			queue.take();			
+			System.out.println(Thread.currentThread().getName()+"  value printed "+arr[atIndex.getAndIncrement()]);
+			Thread.sleep(100);
+			}
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+}	
+
+
+}
