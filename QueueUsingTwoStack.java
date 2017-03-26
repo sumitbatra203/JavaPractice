@@ -4,7 +4,7 @@ import java.text.*;
 import java.math.*;
 import java.util.regex.*;
 
-public class Solution {
+public class QueueUsingTwoStack {
     public static class MyQueue<T> {
         Stack<T> stackNewestOnTop = new Stack<T>();
         Stack<T> stackOldestOnTop = new Stack<T>();
